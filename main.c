@@ -2,13 +2,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include<string.h>
 
 
 int main(void) {
 
     //Create a socket
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in client_addr;
+    struct sockaddr client_addr;
 
     if (server_socket < 0) {
         printf("Error creating socket\n");
@@ -39,10 +40,22 @@ int main(void) {
 
     socklen_t adress_len = sizeof(client_addr);
 
-    // Accept incoming connections
-    accept(server_socket, (struct sockaddr *) &client_addr, &adress_len);
+    while (1) {
+        int fd = accept(server_socket, &client_addr, &adress_len);
+        if (fd < 0) {
+            printf("Error accepting connection\n");
+            continue;
+        }
+        printf("Connection accepted\n");
 
-    printf("Connection accepted\n");
+        char buffer[1024];
+        read(fd, buffer, sizeof(buffer));
+
+        const char *response = "HTTP/1.1 200 OK\r\n\r\n";
+        write(fd, response, strlen(response));
+
+        close(fd);
+    }
 
     // Close the socket
     close(server_socket);
