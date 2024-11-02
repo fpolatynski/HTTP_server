@@ -1,6 +1,8 @@
 # Use an official Linux distribution with GCC installed
 FROM gcc:latest
 
+EXPOSE 9002
+
 # Set working directory inside the container
 WORKDIR /app
 
@@ -14,4 +16,4 @@ COPY . .
 RUN make
 
 # Set the default command to execute the compiled program
-CMD ["./main"]
+CMD ["./build/main"]
