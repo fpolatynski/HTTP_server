@@ -1,8 +1,4 @@
-FROM gcc:latest
+# Small HTTP server
+Dockerised Http server writen in C.
 
-WORKDIR /app
-
-COPY . .
-
-RUN make
-
+its not ready yet:(
