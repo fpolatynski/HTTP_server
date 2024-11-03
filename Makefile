@@ -1,7 +1,15 @@
 CC = gcc
+INCLUDES = -I./include
+SRCS = main.c src/server.c
 
-main: main.c
-	$(CC) main.c -o build/main
+
+all: build/main
+
+build/main: $(SRCS)
+	$(CC) $(INCLUDES) $(SRCS) -o build/main
+
+%.o: %.c
+	$(CC) -I./include -c $< -o $@
 
 clean:
 	rm -f build/main
