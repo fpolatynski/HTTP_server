@@ -1,6 +1,6 @@
 CC = gcc
 INCLUDES = -I./include
-SRCS = main.c src/server.c
+SRCS = main.c src/server.c src/utils.c
 
 
 all: build/main

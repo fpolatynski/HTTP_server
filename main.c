@@ -19,5 +19,6 @@ int main(void) {
     
     // Close the socket
     close(server_socket);
+    return 0;
 
 }

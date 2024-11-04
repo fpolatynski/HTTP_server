@@ -3,10 +3,13 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "server.h"
+#include "utils.h"
 
 int init_server() {
+
     //Create a socket
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -45,7 +48,18 @@ void handle_connection(int server_socket) {
     struct sockaddr client_addr;
 
     socklen_t adress_len = sizeof(client_addr);
-    const char *response_ok = "HTTP/1.1 200 OK\r\nContent-Type:text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>";
+    char* html = parse_html("templates/index.html");
+    if (html == NULL) {
+        printf("Error reading html file\n");
+        free(html);
+        return;
+    }
+    char *response_ok = "HTTP/1.1 200 OK\r\nContent-Type:text/html\r\n\r\n";
+    char *response = malloc(strlen(response_ok) + strlen(html));
+    strcpy(response, response_ok);
+    strcat(response, html);
+    printf("Response: %s\n", response);
+    free(html);
     const char *response_not_found = "HTTP/1.1 404 Not Found\r\nContent-Type:text/html\r\n\r\n<html><body><h1>404 Not Found</h1></body></html>";
 
     while (1) {
@@ -63,12 +77,12 @@ void handle_connection(int server_socket) {
         printf("Request type: %s to path: %s\n", request_type, request_path);
 
         if (strcmp(request_path, "/") == 0) {
-            write(fd, response_ok, strlen(response_ok));
+            write(fd, response, strlen(response));
         } else {
             write(fd, response_not_found, strlen(response_not_found));
         }
-
         close(fd);
     }
+    free(response);
 
 }
