@@ -58,7 +58,6 @@ void handle_connection(int server_socket) {
     char *response = malloc(strlen(response_ok) + strlen(html));
     strcpy(response, response_ok);
     strcat(response, html);
-    printf("Response: %s\n", response);
     free(html);
     const char *response_not_found = "HTTP/1.1 404 Not Found\r\nContent-Type:text/html\r\n\r\n<html><body><h1>404 Not Found</h1></body></html>";
 
