@@ -83,5 +83,8 @@ void handle_connection(int server_socket) {
         close(fd);
     }
     free(response);
+}
 
+void close_socket(int server_socket) {
+    close(server_socket);
 }

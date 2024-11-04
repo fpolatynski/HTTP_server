@@ -5,5 +5,6 @@
 
 int init_server();
 void handle_connection(int server_socket);
+void close_socket(int server_socket);
 
 #endif

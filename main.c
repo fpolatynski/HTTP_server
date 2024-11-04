@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <string.h>
 #include "server.h"
 
 
@@ -18,7 +13,7 @@ int main(void) {
     handle_connection(server_socket);
     
     // Close the socket
-    close(server_socket);
+    close_socket(server_socket);
     return 0;
 
 }
