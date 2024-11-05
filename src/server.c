@@ -54,12 +54,21 @@ void handle_connection(int server_socket) {
         free(html);
         return;
     }
-    char *response_ok = "HTTP/1.1 200 OK\r\nContent-Type:text/html\r\n\r\n";
-    char *response = malloc(strlen(response_ok) + strlen(html));
+    char *response_ok = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
+
+    char *content_lenght = malloc(8);
+    sprintf(content_lenght, "%lu", strlen(html));
+
+    char *response = malloc(strlen(response_ok) + strlen(html) + 8 + 4);
     strcpy(response, response_ok);
+    strcat(response, content_lenght);
+    strcat(response, "\r\n\r\n");
     strcat(response, html);
-    free(html);
+
     const char *response_not_found = "HTTP/1.1 404 Not Found\r\nContent-Type:text/html\r\n\r\n<html><body><h1>404 Not Found</h1></body></html>";
+
+    free(html);
+    free(content_lenght);
 
     while (1) {
         int fd = accept(server_socket, &client_addr, &adress_len);
