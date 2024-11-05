@@ -2,6 +2,7 @@
 #define SERVER_H
 
 #define PORT 9002
+#define BACKLOG 10
 
 int init_server();
 void handle_connection(int server_socket);
