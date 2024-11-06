@@ -1,8 +1,8 @@
 # Small HTTP server
-Dockerised Http server writen in C that generate custom html file in the browser. 
+Dockerised HTTP/1.1 server writen in C that sends custom html to the browser. 
 
 ### How to run
 To run you need to run command
-'''
+```
 ./run_docker.sh
-'''
+```
