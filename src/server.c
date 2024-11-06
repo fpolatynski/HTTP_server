@@ -33,48 +33,21 @@ int init_server() {
 
     int backlog = 5;
     // Listen for incoming connections
-    if (listen(server_socket, backlog) < 0) {
+    if (listen(server_socket, BACKLOG) < 0) {
         printf("Error listening on socket\n");
         return -1;
     }
 
     printf("Listening on port %d\n", PORT);
 
-    return (server_socket);
+    return server_socket;
 }
 
+void handle_connection(int fd, char* response, char* response_not_found) {
 
-void handle_connection(int server_socket) {
-    struct sockaddr client_addr;
-
-    socklen_t adress_len = sizeof(client_addr);
-    char* html = parse_html("templates/index.html");
-    if (html == NULL) {
-        printf("Error reading html file\n");
-        free(html);
-        return;
-    }
-    char *response_ok = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
-
-    char *content_lenght = malloc(8);
-    sprintf(content_lenght, "%lu", strlen(html));
-
-    char *response = malloc(strlen(response_ok) + strlen(html) + 8 + 4);
-    strcpy(response, response_ok);
-    strcat(response, content_lenght);
-    strcat(response, "\r\n\r\n");
-    strcat(response, html);
-
-    const char *response_not_found = "HTTP/1.1 404 Not Found\r\nContent-Type:text/html\r\n\r\n<html><body><h1>404 Not Found</h1></body></html>";
-
-    free(html);
-    free(content_lenght);
-
-    while (1) {
-        int fd = accept(server_socket, &client_addr, &adress_len);
         if (fd < 0) {
             printf("Error accepting connection\n");
-            continue;
+            return;
         }
         printf("Connection accepted\n");
 
@@ -90,9 +63,38 @@ void handle_connection(int server_socket) {
             write(fd, response_not_found, strlen(response_not_found));
         }
         close(fd);
-    }
-    free(response);
 }
+
+
+char* index_response() {
+    char* html = parse_html("templates/index.html");
+    if (html == NULL) {
+        printf("Error reading html file\n");
+        free(html);
+        return NULL;
+    }
+    char *response_ok = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
+
+    char *content_lenght = malloc(8);
+    sprintf(content_lenght, "%lu", strlen(html));
+
+    char *response = malloc(strlen(response_ok) + strlen(html) + 8 + 4);
+    strcpy(response, response_ok);
+    strcat(response, content_lenght);
+    strcat(response, "\r\n\r\n");
+    strcat(response, html);
+
+    free(html);
+    free(content_lenght);
+    return response;
+}
+
+
+char* not_found_response() {
+    char *response_not_found = "HTTP/1.1 404 Not Found\r\nContent-Type:text/html\r\n\r\n<html><body><h1>404 Not Found</h1></body></html>";
+    return response_not_found;
+}
+
 
 void close_socket(int server_socket) {
     close(server_socket);
