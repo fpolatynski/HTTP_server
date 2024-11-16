@@ -31,7 +31,6 @@ int init_server() {
         return -1;
     }
 
-    int backlog = 5;
     // Listen for incoming connections
     if (listen(server_socket, BACKLOG) < 0) {
         printf("Error listening on socket\n");
@@ -43,26 +42,30 @@ int init_server() {
     return server_socket;
 }
 
-void handle_connection(int fd, char* response, char* response_not_found) {
-
-        if (fd < 0) {
+void* handle_connection(void *arg) {
+    struct connection *con = (struct connection *) arg;
+    if (con->client_socket < 0) {
             printf("Error accepting connection\n");
-            return;
+            free(con);
+            return NULL;
         }
-        printf("Connection accepted\n");
+    printf("Connection accepted\n");
 
-        char buffer[1024];
-        read(fd, buffer, sizeof(buffer));
-        char* request_type = strtok(buffer, " ");
-        char* request_path = strtok(NULL, " ");
-        printf("Request type: %s to path: %s\n", request_type, request_path);
+    char buffer[1024];
+    read(con->client_socket, buffer, sizeof(buffer));
+    printf("Request: %s\n", buffer);
+    char* request_type = strtok(buffer, " ");
+    char* request_path = strtok(NULL, " ");
+    printf("Request type: %s to path: %s\n", request_type, request_path);
 
-        if (strcmp(request_path, "/") == 0) {
-            write(fd, response, strlen(response));
-        } else {
-            write(fd, response_not_found, strlen(response_not_found));
-        }
-        close(fd);
+    if (strcmp(request_path, "/") == 0) {
+        write(con->client_socket, con->response, strlen(con->response));
+    } else {
+        write(con->client_socket, con->response_not_found, strlen(con->response_not_found));
+    }
+    close(con->client_socket);
+    free(con);
+    return NULL;
 }
 
 
